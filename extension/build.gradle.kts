@@ -15,7 +15,7 @@ typewriter {
     namespace = "legendsofxania"
 
     extension {
-        name = "Schematic"
+        name = "Structure"
         shortDescription = "Display schematics in Typewriter."
         description = """
             Display schematics in your interactions and create
