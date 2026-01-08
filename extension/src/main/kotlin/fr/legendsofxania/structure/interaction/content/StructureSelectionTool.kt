@@ -1,5 +1,7 @@
 package fr.legendsofxania.structure.interaction.content
 
+import com.typewritermc.core.utils.UntickedAsync
+import com.typewritermc.core.utils.launch
 import com.typewritermc.engine.paper.content.ContentComponent
 import com.typewritermc.engine.paper.content.components.IntractableItem
 import com.typewritermc.engine.paper.content.components.ItemComponent
@@ -8,8 +10,10 @@ import com.typewritermc.engine.paper.content.components.onInteract
 import com.typewritermc.engine.paper.utils.asMini
 import com.typewritermc.engine.paper.utils.msg
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
+import fr.legendsofxania.structure.manager.TemplateManager
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import kotlinx.coroutines.Dispatchers
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -54,7 +58,27 @@ class StructureSelectionTool(
                 onSelectionChanged(location, location)
                 player.msg("Second corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
             }
-            // TODO: Implement structure saving logic
+            ItemInteractionType.SHIFT_LEFT_CLICK -> {
+                val c1 = corner1 ?: run {
+                    player.msg("<red>You must select both corners before saving the room.</red>")
+                    return
+                }
+                val c2 = corner2 ?: run {
+                    player.msg("<red>You must select both corners before saving the room.</red>")
+                    return
+                }
+
+                Dispatchers.UntickedAsync.launch {
+                    TemplateManager.saveTemplate(c1, c2, entry)
+                        .onSuccess {
+                            player.msg("Template saved successfully.")
+                        }
+                        .onFailure {
+                            player.msg("Failed to save Template: ${it.message}")
+                        }
+                }
+
+            }
             else -> return
         }
     }
