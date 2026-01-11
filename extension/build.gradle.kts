@@ -39,7 +39,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = project.group as String
-            artifactId = typewriter.extension?.name
+            artifactId = project.name
             version = project.version as String
         }
     }
