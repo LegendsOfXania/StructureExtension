@@ -3,8 +3,8 @@ plugins {
     kotlin("jvm") version "2.2.10"
     /* Typewriter */
     id("com.typewritermc.module-plugin") version "2.1.0"
-    /* Shadow */
-    id("com.gradleup.shadow") version "9.3.1"
+    /* Paperweight */
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
     /* Maven Publish */
     `maven-publish`
 }
@@ -12,14 +12,10 @@ plugins {
 group = "fr.legendsofxania"
 version = "0.0.1"
 
-repositories {
-    /* Blockify */
-    maven("https://jitpack.io")
-}
-
+repositories {}
 dependencies {
-    /* Blockify */
-    implementation("com.github.Kooperlol:Blockify:1.0.0")
+    /* Paperweight */
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
 }
 
 typewriter {
@@ -44,17 +40,6 @@ kotlin {
     jvmToolchain(21)
 }
 
-tasks {
-    shadowJar {
-        relocate("dev.kooper.blockify", "fr.legendsofxania.structure.lib.blockify")
-        minimize()
-    }
-
-    build {
-        dependsOn(shadowJar)
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -62,7 +47,9 @@ publishing {
             artifactId = project.name
             version = project.version as String
 
-            artifact(tasks.shadowJar)
+            from(components["java"])
         }
     }
 }
+
+paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION

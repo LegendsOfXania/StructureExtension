@@ -27,6 +27,6 @@ class StructureTemplateEntry(
     override val name: String = "",
     @ContentEditor(StructureTemplateContentMode::class)
     override val artifactId: String = "",
-    @Help("Should you save the entities present in your structure?")
+    @Help("Should you save the entities present in your template?")
     val saveEntities: Boolean = false
 ) : ArtifactEntry
