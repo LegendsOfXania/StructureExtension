@@ -1,17 +1,17 @@
 package fr.legendsofxania.structure.event
 
 import org.bukkit.Location
-import org.bukkit.block.data.BlockData
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
+import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
-import org.bukkit.event.player.PlayerEvent
 
-class AsyncPlayerFakeBlockBreakEvent(
-    player: Player,
-    val location: Location,
-    val blockData: BlockData
-) : PlayerEvent(player, true), Cancellable {
+class AsyncBreakFakeBlockEvent(
+    val block: Block,
+    val player: Player,
+    val location: Location
+) : Event(true), Cancellable {
 
     private var cancelled = false
 
