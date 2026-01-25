@@ -6,6 +6,8 @@ import com.typewritermc.core.entries.emptyRef
 import com.typewritermc.core.extension.annotations.Entry
 import com.typewritermc.core.extension.annotations.Help
 import com.typewritermc.core.extension.annotations.Tags
+import com.typewritermc.core.utils.UntickedAsync
+import com.typewritermc.core.utils.launch
 import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.Criteria
 import com.typewritermc.engine.paper.entry.Modifier
@@ -14,7 +16,17 @@ import com.typewritermc.engine.paper.entry.entries.ActionEntry
 import com.typewritermc.engine.paper.entry.entries.ActionTrigger
 import com.typewritermc.engine.paper.entry.entries.ConstVar
 import com.typewritermc.engine.paper.entry.entries.Var
+import com.typewritermc.engine.paper.interaction.interactionContext
+import com.typewritermc.engine.paper.utils.Sync
+import com.typewritermc.engine.paper.utils.toBukkitLocation
+import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
+import fr.legendsofxania.structure.manager.TemplateManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.bukkit.block.structure.Mirror
 import org.bukkit.block.structure.StructureRotation
+import org.bukkit.entity.Player
+import java.util.Random
 
 @Entry(
     "set_structure",
@@ -37,14 +49,35 @@ class SetStructureActionEntry(
     override val criteria: List<Criteria> = emptyList(),
     override val modifiers: List<Modifier> = emptyList(),
     override val triggers: List<Ref<TriggerableEntry>> = emptyList(),
-    @Help("The StructureTemplate to place.")
-    val template: Var<Ref<SetStructureActionEntry>> = ConstVar(emptyRef()),
-    @Help("The location where the StructureTemplate will be placed.")
+    @Help("The structure template to paste.")
+    val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    @Help("The location where to paste the structure.")
     val location: Var<Position> = ConstVar(Position.ORIGIN),
-    @Help("The rotation to apply to the StructureTemplate when placed.")
-    val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE)
+    @Help("The rotation to apply to the structure when pasting it.")
+    val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    @Help("Whether to ignore the entities present in the template when pasting the structure.")
+    val ignoreEntities: Boolean = false
 ) : ActionEntry {
     override fun ActionTrigger.execute() {
-        // TODO: Implement the logic to set the structure template at the specified location with the given rotation.
+        Dispatchers.UntickedAsync.launch {
+            setStructure(player)
+        }
+    }
+
+    private suspend fun setStructure(player: Player) {
+        val templateEntry = template.get(player, player.interactionContext).entry ?: return
+        val structure = TemplateManager.loadTemplateAsStructure(templateEntry) ?: return
+
+        withContext(Dispatchers.Sync) {
+            structure.place(
+                location.get(player, player.interactionContext).toBukkitLocation(),
+                ignoreEntities,
+                rotation.get(player, player.interactionContext),
+                Mirror.NONE,
+                0,
+                1f,
+                Random()
+            )
+        }
     }
 }
