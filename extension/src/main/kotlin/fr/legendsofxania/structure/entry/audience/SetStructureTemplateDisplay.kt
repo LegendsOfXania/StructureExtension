@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
 
 class SetStructureTemplateDisplay(
     private val template: Var<Ref<StructureTemplateEntry>>,
-    private val location: Var<Position>,
+    private val position: Var<Position>,
     private val rotation: Var<StructureRotation>,
     private val ignoreEntities: Boolean,
     private val ignoreAir: Boolean
