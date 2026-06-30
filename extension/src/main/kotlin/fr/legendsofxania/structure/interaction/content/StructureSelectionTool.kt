@@ -22,7 +22,6 @@ import org.bukkit.inventory.ItemStack
 @Suppress("UnstableApiUsage")
 class StructureSelectionTool(
     private val entry: StructureTemplateEntry,
-    private val onSelectionChanged: (Location?, Location?) -> Unit
 ) : ContentComponent, ItemComponent {
     private var corner1: Location? = null
     private var corner2: Location? = null
@@ -50,13 +49,11 @@ class StructureSelectionTool(
         when (type) {
             ItemInteractionType.LEFT_CLICK -> {
                 corner1 = location
-                onSelectionChanged(location, location)
                 player.msg("First corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
             }
 
             ItemInteractionType.RIGHT_CLICK -> {
                 corner2 = location
-                onSelectionChanged(location, location)
                 player.msg("Second corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
             }
 
