@@ -19,7 +19,7 @@ class StructureTemplateContentMode(
 
     override suspend fun setup(): Result<Unit> {
         bossBar {
-            title = "<aqua>Structure Template Mode</aqua>"
+            title = "Structure Template Mode"
             color = BossBar.Color.BLUE
             progress = 1.0f
         }

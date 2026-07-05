@@ -31,15 +31,17 @@ class SetStructureTemplateAudienceEntry(
     override val id: String = "",
     override val name: String = "",
     @Help("The structure template to paste.")
-    val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    val template: Ref<StructureTemplateEntry> = emptyRef(),
     @Help("The location where to paste the structure.")
-    val location: Var<Position> = ConstVar(Position.ORIGIN),
+    val location: Position = Position.ORIGIN,
     @Help("The rotation to apply to the structure when pasting it.")
-    val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    val rotation: StructureRotation = StructureRotation.NONE,
     @Help("Whether to ignore air blocks when pasting the structure.")
-    val ignoreAir: Boolean = false
+    val ignoreAir: Boolean = false,
+    @Help("Spawn entities present in the template?")
+    val entities: Boolean = false,
 ) : AudienceEntry {
     override suspend fun display(): AudienceDisplay {
-        return SetStructureTemplateDisplay(template, location, rotation, ignoreAir)
+        return SetStructureTemplateDisplay(template, location, rotation, ignoreAir, entities)
     }
 }

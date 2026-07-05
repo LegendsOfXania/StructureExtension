@@ -47,6 +47,8 @@ class SetStructureActionEntry(
     val location: Var<Position> = ConstVar(Position.ORIGIN),
     @Help("The rotation to apply to the structure when pasting it.")
     val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    @Help("Spawn entities present in the template?")
+    val entities: Var<Boolean> = ConstVar(false),
 ) : ActionEntry {
     override fun ActionTrigger.execute() {
         Dispatchers.UntickedAsync.launch {
@@ -58,7 +60,7 @@ class SetStructureActionEntry(
             withContext(Dispatchers.Sync) {
                 structure.place(
                     location.get(player, context).toBukkitLocation(),
-                    true,
+                    entities.get(player, context),
                     rotation.get(player, context),
                     Mirror.NONE,
                     0,
