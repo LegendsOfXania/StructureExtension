@@ -26,7 +26,12 @@ import org.bukkit.block.structure.Mirror
 import org.bukkit.block.structure.StructureRotation
 import java.util.*
 
-@Entry("set_structure", "Place a StructureTemplate at a specified location.", Colors.RED, "fluent:apps-48-filled")
+@Entry(
+    "set_structure_template",
+    "Place a StructureTemplate at a specified location.",
+    Colors.RED,
+    "fluent:apps-48-filled"
+)
 /**
  * The `Set Structure` action entry allows you to place a structure at a specified location.
  *
@@ -35,7 +40,7 @@ import java.util.*
  * - Creating dynamic environments by placing structures based on player actions.
  * - Generating buildings or landmarks in response to game events.
  */
-class SetStructureActionEntry(
+class SetStructureTemplateActionEntry(
     override val id: String = "",
     override val name: String = "",
     override val criteria: List<Criteria> = emptyList(),
