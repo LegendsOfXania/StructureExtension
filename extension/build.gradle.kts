@@ -19,7 +19,7 @@ typewriter {
             beautiful places directly in Typewriter.
             Created by the Legends of Xania.
         """.trimIndent()
-        engineVersion = "0.9.0-beta-174"
+        engineVersion = "0.9.0-beta-175"
         channel = com.typewritermc.moduleplugin.ReleaseChannel.BETA
         paper()
     }

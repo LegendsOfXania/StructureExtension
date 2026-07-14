@@ -95,6 +95,7 @@ class StructureInstance(
             packet.setBlockID(SpigotConversionUtil.fromBukkitBlockData(expected).globalId)
         }
     }
+
     private val bukkitListener: Listener = object : Listener {
         @EventHandler(ignoreCancelled = true)
         fun onBlockPlace(event: BlockPlaceEvent) {
@@ -151,7 +152,7 @@ class StructureInstance(
             viewers.add(player.uniqueId)
             plugin.server.scheduler.runTask(plugin) { _ ->
                 val missing = loaded.chunks
-                    .filterNot { PlayerChunkTracker.hasChunk(player, (it shr 32).toInt(), it.toInt()) }
+                    .filterNot { ChunkTracker.hasChunk(player, (it shr 32).toInt(), it.toInt()) }
                     .toMutableSet()
                 if (missing.isEmpty()) flush(player) else pendingChunks[player.uniqueId] = missing
             }

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 fun chunkKey(x: Int, z: Int): Long = (x.toLong() shl 32) or (z.toLong() and 0xFFFFFFFFL)
 
-object PlayerChunkTracker : Listener {
+object ChunkTracker : Listener {
     private const val JOIN_GRACE_MS = 3000L
 
     private val sent = ConcurrentHashMap<UUID, MutableSet<Long>>()
@@ -31,7 +31,7 @@ object PlayerChunkTracker : Listener {
     }
 
     @EventHandler
-    fun onJoin(event: PlayerJoinEvent) {
+    fun onPLayerJoin(event: PlayerJoinEvent) {
         joinedAt[event.player.uniqueId] = System.currentTimeMillis()
     }
 
@@ -42,7 +42,7 @@ object PlayerChunkTracker : Listener {
     }
 
     @EventHandler
-    fun onQuit(event: PlayerQuitEvent) {
+    fun onPlayerQuit(event: PlayerQuitEvent) {
         sent.remove(event.player.uniqueId)
         joinedAt.remove(event.player.uniqueId)
     }
