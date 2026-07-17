@@ -19,6 +19,7 @@ import fr.legendsofxania.structure.manager.TemplateManager
 import fr.legendsofxania.structure.util.*
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import io.papermc.paper.event.packet.PlayerChunkLoadEvent
+import io.papermc.paper.event.packet.PlayerChunkUnloadEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -118,6 +119,16 @@ class StructureInstance(
                 pendingChunks.remove(event.player.uniqueId)
                 flush(event.player)
             }
+        }
+
+        @EventHandler(ignoreCancelled = true)
+        fun onChunkUnload(event: PlayerChunkUnloadEvent) {
+            val uuid = event.player.uniqueId
+            if (uuid !in viewers) return
+            val key = chunkKey(event.chunk.x, event.chunk.z)
+            val loaded = state ?: return
+            if (key !in loaded.chunks) return
+            pendingChunks.getOrPut(uuid) { ConcurrentHashMap.newKeySet() }.add(key)
         }
     }
 

@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 fun chunkKey(x: Int, z: Int): Long = (x.toLong() shl 32) or (z.toLong() and 0xFFFFFFFFL)
@@ -36,14 +36,14 @@ object ChunkTracker : Listener {
     }
 
     @EventHandler
-    fun onChunkLoad(event: PlayerChunkLoadEvent) {
-        sent.getOrPut(event.player.uniqueId) { ConcurrentHashMap.newKeySet() }
-            .add(chunkKey(event.chunk.x, event.chunk.z))
-    }
-
-    @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         sent.remove(event.player.uniqueId)
         joinedAt.remove(event.player.uniqueId)
+    }
+
+    @EventHandler
+    fun onChunkLoad(event: PlayerChunkLoadEvent) {
+        sent.getOrPut(event.player.uniqueId) { ConcurrentHashMap.newKeySet() }
+            .add(chunkKey(event.chunk.x, event.chunk.z))
     }
 }
