@@ -10,20 +10,20 @@ import com.typewritermc.engine.paper.content.components.onInteract
 import com.typewritermc.engine.paper.utils.asMini
 import com.typewritermc.engine.paper.utils.msg
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
+import fr.legendsofxania.structure.interaction.content.StructureSelection
 import fr.legendsofxania.structure.manager.TemplateManager
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import kotlinx.coroutines.Dispatchers
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class StructureSelectionTool(
     private val entry: StructureTemplateEntry,
+    private val selection: StructureSelection,
+    private val visualizer: StructureSelectionVisualizer,
 ) : ContentComponent, ItemComponent {
-    private var corner1: Location? = null
-    private var corner2: Location? = null
 
     override fun item(player: Player): Pair<Int, IntractableItem> {
         val item = ItemStack(Material.BREEZE_ROD).apply {
@@ -38,47 +38,35 @@ class StructureSelectionTool(
                 ))
         } onInteract { event ->
             val location = event.clickedBlock?.location ?: player.location
-            handleInteraction(player, location, event.type)
-        }
+            when (event.type) {
+                ItemInteractionType.LEFT_CLICK -> {
+                    selection.corner1 = location
+                    visualizer.update(selection)
+                    player.msg("First corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
+                }
 
+                ItemInteractionType.RIGHT_CLICK -> {
+                    selection.corner2 = location
+                    visualizer.update(selection)
+                    player.msg("Second corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
+                }
+
+                ItemInteractionType.SHIFT_LEFT_CLICK -> save(player)
+                else -> Unit
+            }
+        }
         return 4 to item
     }
 
-    private fun handleInteraction(player: Player, location: Location, type: ItemInteractionType) {
-        when (type) {
-            ItemInteractionType.LEFT_CLICK -> {
-                corner1 = location
-                player.msg("First corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
-            }
-
-            ItemInteractionType.RIGHT_CLICK -> {
-                corner2 = location
-                player.msg("Second corner selected at <blue>${location.blockX}</blue>, <blue>${location.blockY}</blue>, <blue>${location.blockZ}</blue>.")
-            }
-
-            ItemInteractionType.SHIFT_LEFT_CLICK -> {
-                val c1 = corner1 ?: run {
-                    player.msg("<red>You must select both corners before saving the room.</red>")
-                    return
-                }
-                val c2 = corner2 ?: run {
-                    player.msg("<red>You must select both corners before saving the room.</red>")
-                    return
-                }
-
-                Dispatchers.UntickedAsync.launch {
-                    TemplateManager.saveTemplate(c1, c2, entry)
-                        .onSuccess {
-                            player.msg("Template saved successfully.")
-                        }
-                        .onFailure {
-                            player.msg("Failed to save Template: ${it.message}")
-                        }
-                }
-
-            }
-
-            else -> return
+    private fun save(player: Player) {
+        val (c1, c2) = selection.corners() ?: run {
+            player.msg("<red>You must select both corners before saving the room.</red>")
+            return
+        }
+        Dispatchers.UntickedAsync.launch {
+            TemplateManager.saveTemplate(c1, c2, entry)
+                .onSuccess { player.msg("Template saved successfully.") }
+                .onFailure { player.msg("Failed to save Template: ${it.message}") }
         }
     }
 }
