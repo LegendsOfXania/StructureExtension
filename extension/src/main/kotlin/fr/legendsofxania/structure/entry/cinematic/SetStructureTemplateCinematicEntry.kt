@@ -4,16 +4,10 @@ import com.typewritermc.core.books.pages.Colors
 import com.typewritermc.core.entries.Ref
 import com.typewritermc.core.entries.emptyRef
 import com.typewritermc.core.extension.annotations.Entry
-import com.typewritermc.core.extension.annotations.Help
 import com.typewritermc.core.extension.annotations.Segments
 import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.Criteria
-import com.typewritermc.engine.paper.entry.entries.CinematicAction
-import com.typewritermc.engine.paper.entry.entries.CinematicEntry
-import com.typewritermc.engine.paper.entry.entries.ConstVar
-import com.typewritermc.engine.paper.entry.entries.Segment
-import com.typewritermc.engine.paper.entry.entries.Var
-import com.typewritermc.engine.paper.entry.entries.canFinishAt
+import com.typewritermc.engine.paper.entry.entries.*
 import fr.legendsofxania.structure.entry.StructureTemplateSetterEntry
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import fr.legendsofxania.structure.interaction.instance.StructureInstance

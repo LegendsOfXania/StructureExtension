@@ -2,6 +2,7 @@ package fr.legendsofxania.structure.entry
 
 import com.typewritermc.core.entries.Entry
 import com.typewritermc.core.entries.Ref
+import com.typewritermc.core.extension.annotations.Default
 import com.typewritermc.core.extension.annotations.Help
 import com.typewritermc.core.extension.annotations.Tags
 import com.typewritermc.core.utils.point.Position
@@ -21,11 +22,14 @@ interface StructureTemplateSetterEntry : Entry {
     val location: Var<Position>
 
     @Help("The rotation to apply to the structure when pasting it.")
+    @Default("NONE")
     val rotation: Var<StructureRotation>
 
     @Help("Ignore air blocks when pasting the structure?")
+    @Default("false")
     val ignoreAir: Var<Boolean>
 
     @Help("Spawn entities present in the template?")
+    @Default("false")
     val entities: Var<Boolean>
 }
