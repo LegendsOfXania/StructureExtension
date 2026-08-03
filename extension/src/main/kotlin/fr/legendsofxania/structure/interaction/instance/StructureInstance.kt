@@ -17,6 +17,9 @@ import com.typewritermc.engine.paper.utils.toBukkitLocation
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import fr.legendsofxania.structure.manager.TemplateManager
 import fr.legendsofxania.structure.util.*
+import fr.legendsofxania.structure.util.structure.buildStructureEntities
+import fr.legendsofxania.structure.util.structure.packBlockPos
+import fr.legendsofxania.structure.util.structure.structureBlockChanges
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import io.papermc.paper.event.packet.PlayerChunkLoadEvent
 import io.papermc.paper.event.packet.PlayerChunkUnloadEvent
@@ -35,7 +38,6 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-
 
 class StructureInstance(
     private val template: Ref<StructureTemplateEntry>,
@@ -151,7 +153,7 @@ class StructureInstance(
             val structure = template.entry?.let { TemplateManager.loadTemplate(it) } ?: return@withLock null
             val origin = position.toBukkitLocation(player.world)
             val data = structureBlockChanges(structure, rotation, ignoreAir, origin)
-            val entities = if (entities) buildStructureEntities(structure, origin) else emptyList()
+            val entities = if (entities) buildStructureEntities(structure, origin, rotation) else emptyList()
             State(origin, data.chunks, data.blocks, entities).also { state = it }
         }
     }

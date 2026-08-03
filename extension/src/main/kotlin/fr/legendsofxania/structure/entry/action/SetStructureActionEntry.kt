@@ -18,6 +18,7 @@ import com.typewritermc.engine.paper.entry.entries.Var
 import com.typewritermc.engine.paper.interaction.interactionContext
 import com.typewritermc.engine.paper.utils.Sync
 import com.typewritermc.engine.paper.utils.toBukkitLocation
+import fr.legendsofxania.structure.entry.StructureTemplateSetterEntry
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import fr.legendsofxania.structure.manager.TemplateManager
 import kotlinx.coroutines.Dispatchers
@@ -46,15 +47,12 @@ class SetStructureTemplateActionEntry(
     override val criteria: List<Criteria> = emptyList(),
     override val modifiers: List<Modifier> = emptyList(),
     override val triggers: List<Ref<TriggerableEntry>> = emptyList(),
-    @Help("The structure template to paste.")
-    val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
-    @Help("The location where to paste the structure.")
-    val location: Var<Position> = ConstVar(Position.ORIGIN),
-    @Help("The rotation to apply to the structure when pasting it.")
-    val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
-    @Help("Spawn entities present in the template?")
-    val entities: Var<Boolean> = ConstVar(false),
-) : ActionEntry {
+    override val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    override val location: Var<Position> = ConstVar(Position.ORIGIN),
+    override val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    override val ignoreAir: Var<Boolean> = ConstVar(false),
+    override val entities: Var<Boolean> = ConstVar(false),
+) : ActionEntry, StructureTemplateSetterEntry {
     override fun ActionTrigger.execute() {
         Dispatchers.UntickedAsync.launch {
             val player = player
@@ -76,3 +74,5 @@ class SetStructureTemplateActionEntry(
         }
     }
 }
+
+//todo ignoreAir

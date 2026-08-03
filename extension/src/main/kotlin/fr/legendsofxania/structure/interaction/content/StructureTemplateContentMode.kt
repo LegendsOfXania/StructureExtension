@@ -42,7 +42,7 @@ class StructureTemplateContentMode(
             ?: return failure("Entry ID not found in context.")
 
         val entry = Query.findById<StructureTemplateEntry>(entryId)
-            ?: return failure("RoomTemplateEntry not found for ID: $entryId")
+            ?: return failure("StructureTemplateEntry with ID: $entryId, not found")
 
         val selectionTool = StructureSelectionTool(entry, StructureSelection(), visualizer)
         +selectionTool

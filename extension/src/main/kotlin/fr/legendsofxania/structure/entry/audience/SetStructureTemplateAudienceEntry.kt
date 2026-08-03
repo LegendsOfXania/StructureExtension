@@ -4,12 +4,12 @@ import com.typewritermc.core.books.pages.Colors
 import com.typewritermc.core.entries.Ref
 import com.typewritermc.core.entries.emptyRef
 import com.typewritermc.core.extension.annotations.Entry
-import com.typewritermc.core.extension.annotations.Help
 import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.entries.AudienceDisplay
 import com.typewritermc.engine.paper.entry.entries.AudienceEntry
 import com.typewritermc.engine.paper.entry.entries.ConstVar
 import com.typewritermc.engine.paper.entry.entries.Var
+import fr.legendsofxania.structure.entry.StructureTemplateSetterEntry
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import org.bukkit.block.structure.StructureRotation
 
@@ -30,18 +30,11 @@ import org.bukkit.block.structure.StructureRotation
 class SetStructureTemplateAudienceEntry(
     override val id: String = "",
     override val name: String = "",
-    @Help("The structure template to paste.")
-    val template: Ref<StructureTemplateEntry> = emptyRef(),
-    @Help("The location where to paste the structure.")
-    val location: Position = Position.ORIGIN,
-    @Help("The rotation to apply to the structure when pasting it.")
-    val rotation: StructureRotation = StructureRotation.NONE,
-    @Help("Whether to ignore air blocks when pasting the structure.")
-    val ignoreAir: Boolean = false,
-    @Help("Spawn entities present in the template?")
-    val entities: Boolean = false,
-) : AudienceEntry {
-    override suspend fun display(): AudienceDisplay {
-        return SetStructureTemplateDisplay(template, location, rotation, ignoreAir, entities)
-    }
+    override val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    override val location: Var<Position> = ConstVar(Position.ORIGIN),
+    override val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    override val ignoreAir: Var<Boolean> = ConstVar(false),
+    override val entities: Var<Boolean> = ConstVar(false),
+) : AudienceEntry, StructureTemplateSetterEntry {
+    override suspend fun display(): AudienceDisplay = SetStructureTemplateDisplay(this)
 }

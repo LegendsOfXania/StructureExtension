@@ -10,8 +10,11 @@ import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.Criteria
 import com.typewritermc.engine.paper.entry.entries.CinematicAction
 import com.typewritermc.engine.paper.entry.entries.CinematicEntry
+import com.typewritermc.engine.paper.entry.entries.ConstVar
 import com.typewritermc.engine.paper.entry.entries.Segment
+import com.typewritermc.engine.paper.entry.entries.Var
 import com.typewritermc.engine.paper.entry.entries.canFinishAt
+import fr.legendsofxania.structure.entry.StructureTemplateSetterEntry
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import fr.legendsofxania.structure.interaction.instance.StructureInstance
 import org.bukkit.block.structure.StructureRotation
@@ -34,19 +37,14 @@ class SetStructureTemplateCinematicEntry(
     override val id: String = "",
     override val name: String = "",
     override val criteria: List<Criteria> = emptyList(),
-    @Help("The structure template to paste.")
-    val template: Ref<StructureTemplateEntry> = emptyRef(),
-    @Help("The location where to paste the structure.")
-    val location: Position = Position.ORIGIN,
-    @Help("The rotation to apply to the structure when pasting it.")
-    val rotation: StructureRotation = StructureRotation.NONE,
-    @Help("Whether to ignore air blocks when pasting the structure.")
-    val ignoreAir: Boolean = false,
-    @Help("Spawn entities present in the template?")
-    val entities: Boolean = false,
+    override val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    override val location: Var<Position> = ConstVar(Position.ORIGIN),
+    override val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    override val ignoreAir: Var<Boolean> = ConstVar(false),
+    override val entities: Var<Boolean> = ConstVar(false),
     @Segments(Colors.RED, "fluent:apps-48-filled")
     val segments: List<SetStructureTemplateCinematicSegment> = emptyList(),
-) : CinematicEntry {
+) : CinematicEntry, StructureTemplateSetterEntry {
     override fun create(player: Player): CinematicAction = SetStructureTemplateCinematicAction(player, this)
 }
 
@@ -63,11 +61,11 @@ class SetStructureTemplateCinematicAction(
 
     override suspend fun setup() {
         instance = StructureInstance(
-            entry.template,
-            entry.location,
-            entry.rotation,
-            entry.ignoreAir,
-            entry.entities
+            entry.template.get(player),
+            entry.location.get(player),
+            entry.rotation.get(player),
+            entry.ignoreAir.get(player),
+            entry.entities.get(player)
         )
     }
 
