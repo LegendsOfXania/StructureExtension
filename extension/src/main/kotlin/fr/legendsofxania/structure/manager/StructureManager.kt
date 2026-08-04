@@ -22,8 +22,8 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
-object InstanceManager {
-    private val instancesByPlayer = ConcurrentHashMap<UUID, MutableSet<StructureInstance>>()
+object StructureManager {
+    private val instances = ConcurrentHashMap<UUID, MutableSet<StructureInstance>>()
 
     @Volatile
     private var registered = false
@@ -31,7 +31,7 @@ object InstanceManager {
     private val packetListener = object : PacketListenerAbstract() {
         override fun onPacketReceive(event: PacketReceiveEvent) {
             if (event.packetType != PacketType.Play.Client.PLAYER_DIGGING) return
-            val instances = instancesByPlayer[event.user.uuid] ?: return
+            val instances = instances[event.user.uuid] ?: return
 
             val packet = WrapperPlayClientPlayerDigging(event)
             if (packet.action != DiggingAction.START_DIGGING && packet.action != DiggingAction.FINISHED_DIGGING) return
@@ -41,17 +41,16 @@ object InstanceManager {
 
         override fun onPacketSend(event: PacketSendEvent) {
             if (event.packetType != PacketType.Play.Server.BLOCK_CHANGE) return
-            val instances = instancesByPlayer[event.user.uuid] ?: return
+            val instances = instances[event.user.uuid] ?: return
 
             val packet = WrapperPlayServerBlockChange(event)
             instances.forEach { it.onBlockChangeSend(event.user.uuid, packet) }
         }
     }
-
     private val bukkitListener = object : Listener {
         @EventHandler(ignoreCancelled = true)
         fun onBlockPlace(event: BlockPlaceEvent) {
-            val instances = instancesByPlayer[event.player.uniqueId] ?: return
+            val instances = instances[event.player.uniqueId] ?: return
             val b = event.block
             if (instances.any { it.occupies(event.player.uniqueId, b.x, b.y, b.z) }) {
                 event.isCancelled = true
@@ -60,7 +59,7 @@ object InstanceManager {
 
         @EventHandler(ignoreCancelled = true)
         fun onBlockBreak(event: BlockBreakEvent) {
-            val instances = instancesByPlayer[event.player.uniqueId] ?: return
+            val instances = instances[event.player.uniqueId] ?: return
             val b = event.block
             if (instances.any { it.occupies(event.player.uniqueId, b.x, b.y, b.z) }) {
                 event.isCancelled = true
@@ -69,21 +68,21 @@ object InstanceManager {
 
         @EventHandler(ignoreCancelled = true)
         fun onChunkLoad(event: PlayerChunkLoadEvent) {
-            val instances = instancesByPlayer[event.player.uniqueId] ?: return
+            val instances = instances[event.player.uniqueId] ?: return
             val key = chunkKey(event.chunk.x, event.chunk.z)
             instances.forEach { it.onChunkLoad(event.player, key) }
         }
 
         @EventHandler(ignoreCancelled = true)
         fun onChunkUnload(event: PlayerChunkUnloadEvent) {
-            val instances = instancesByPlayer[event.player.uniqueId] ?: return
+            val instances = instances[event.player.uniqueId] ?: return
             val key = chunkKey(event.chunk.x, event.chunk.z)
             instances.forEach { it.onChunkUnload(event.player.uniqueId, key) }
         }
 
         @EventHandler
         fun onQuit(event: PlayerQuitEvent) {
-            instancesByPlayer.remove(event.player.uniqueId)
+            instances.remove(event.player.uniqueId)
         }
     }
 
@@ -97,12 +96,12 @@ object InstanceManager {
 
     fun track(uuid: UUID, instance: StructureInstance) {
         ensureRegistered()
-        instancesByPlayer.getOrPut(uuid) { ConcurrentHashMap.newKeySet() }.add(instance)
+        instances.getOrPut(uuid) { ConcurrentHashMap.newKeySet() }.add(instance)
     }
 
     fun untrack(uuid: UUID, instance: StructureInstance) {
-        val set = instancesByPlayer[uuid] ?: return
+        val set = instances[uuid] ?: return
         set.remove(instance)
-        if (set.isEmpty()) instancesByPlayer.remove(uuid, set)
+        if (set.isEmpty()) instances.remove(uuid, set)
     }
 }

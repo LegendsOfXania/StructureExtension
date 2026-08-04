@@ -7,8 +7,9 @@ import com.typewritermc.core.utils.UntickedAsync
 import com.typewritermc.core.utils.launch
 import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.plugin
+import fr.legendsofxania.structure.entry.StructureConfiguration
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
-import fr.legendsofxania.structure.manager.InstanceManager
+import fr.legendsofxania.structure.manager.StructureManager
 import fr.legendsofxania.structure.util.structure.packBlockPos
 import io.github.retrooper.packetevents.util.SpigotConversionUtil
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +20,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class StructureInstance(
-    template: Ref<StructureTemplateEntry>,
-    position: Position,
-    rotation: StructureRotation,
-    ignoreAir: Boolean,
-    spawnEntities: Boolean,
+    val configuration: StructureConfiguration
 ) {
-    private val loader = StructureLoader(template, position, rotation, ignoreAir, spawnEntities)
+    private val loader = StructureLoader(configuration)
     private val tracker = StructureChunkTracker()
     private val viewers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
@@ -33,7 +30,7 @@ class StructureInstance(
         Dispatchers.UntickedAsync.launch {
             val structure = loader.load(player.world) ?: return@launch
             viewers.add(player.uniqueId)
-            InstanceManager.track(player.uniqueId, this@StructureInstance)
+            StructureManager.track(player.uniqueId, this@StructureInstance)
 
             plugin.server.scheduler.runTask(plugin) { _ ->
                 if (tracker.awaitChunks(player, structure.chunks)) {
@@ -51,11 +48,11 @@ class StructureInstance(
         if (viewers.remove(uuid) && structure != null) {
             StructureRenderer.hide(player, structure)
         }
-        InstanceManager.untrack(uuid, this)
+        StructureManager.untrack(uuid, this)
     }
 
     fun dispose() {
-        viewers.forEach { uuid -> InstanceManager.untrack(uuid, this) }
+        viewers.forEach { uuid -> StructureManager.untrack(uuid, this) }
         loader.cached?.entities?.forEach { it.remove() }
         loader.clear()
         tracker.clear()

@@ -6,7 +6,7 @@ import com.typewritermc.core.extension.annotations.Entry
 import com.typewritermc.core.extension.annotations.Help
 import com.typewritermc.core.extension.annotations.Tags
 import com.typewritermc.engine.paper.entry.entries.ArtifactEntry
-import fr.legendsofxania.structure.interaction.content.StructureTemplateContentMode
+import fr.legendsofxania.structure.interaction.content.TemplateContentMode
 
 @Entry(
     "structure_template",
@@ -25,7 +25,7 @@ import fr.legendsofxania.structure.interaction.content.StructureTemplateContentM
 class StructureTemplateEntry(
     override val id: String = "",
     override val name: String = "",
-    @ContentEditor(StructureTemplateContentMode::class)
+    @ContentEditor(TemplateContentMode::class)
     override val artifactId: String = "",
     @Help("Should you save the entities present in your template?")
     val saveEntities: Boolean = false

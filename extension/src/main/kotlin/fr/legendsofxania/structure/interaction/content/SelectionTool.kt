@@ -10,7 +10,6 @@ import com.typewritermc.engine.paper.content.components.onInteract
 import com.typewritermc.engine.paper.utils.asMini
 import com.typewritermc.engine.paper.utils.msg
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
-import fr.legendsofxania.structure.interaction.content.StructureSelection
 import fr.legendsofxania.structure.manager.TemplateManager
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
@@ -19,10 +18,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class StructureSelectionTool(
+class SelectionTool(
     private val entry: StructureTemplateEntry,
-    private val selection: StructureSelection,
-    private val visualizer: StructureSelectionVisualizer,
+    private val selection: Selection,
+    private val visualizer: SelectionVisualizer,
 ) : ContentComponent, ItemComponent {
 
     override fun item(player: Player): Pair<Int, IntractableItem> {

@@ -8,6 +8,7 @@ import com.typewritermc.core.extension.annotations.Segments
 import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.Criteria
 import com.typewritermc.engine.paper.entry.entries.*
+import fr.legendsofxania.structure.entry.StructureConfiguration
 import fr.legendsofxania.structure.entry.StructureTemplateSetterEntry
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import fr.legendsofxania.structure.interaction.instance.StructureInstance
@@ -31,15 +32,24 @@ class SetStructureTemplateCinematicEntry(
     override val id: String = "",
     override val name: String = "",
     override val criteria: List<Criteria> = emptyList(),
-    override val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
-    override val location: Var<Position> = ConstVar(Position.ORIGIN),
-    override val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
-    override val ignoreAir: Var<Boolean> = ConstVar(false),
-    override val entities: Var<Boolean> = ConstVar(false),
+    val template: Var<Ref<StructureTemplateEntry>> = ConstVar(emptyRef()),
+    val location: Var<Position> = ConstVar(Position.ORIGIN),
+    val rotation: Var<StructureRotation> = ConstVar(StructureRotation.NONE),
+    val ignoreAir: Var<Boolean> = ConstVar(false),
+    val entities: Var<Boolean> = ConstVar(false),
     @Segments(Colors.RED, "fluent:apps-48-filled")
     val segments: List<SetStructureTemplateCinematicSegment> = emptyList(),
 ) : CinematicEntry, StructureTemplateSetterEntry {
     override fun create(player: Player): CinematicAction = SetStructureTemplateCinematicAction(player, this)
+
+    override fun configuration(player: Player): StructureConfiguration =
+        StructureConfiguration(
+            template.get(player),
+            location.get(player),
+            rotation.get(player),
+            ignoreAir.get(player),
+            entities.get(player),
+        )
 }
 
 data class SetStructureTemplateCinematicSegment(
@@ -54,13 +64,7 @@ class SetStructureTemplateCinematicAction(
     private var instance: StructureInstance? = null
 
     override suspend fun setup() {
-        instance = StructureInstance(
-            entry.template.get(player),
-            entry.location.get(player),
-            entry.rotation.get(player),
-            entry.ignoreAir.get(player),
-            entry.entities.get(player)
-        )
+        instance = StructureInstance(entry.configuration(player))
     }
 
     override suspend fun tick(frame: Int) {

@@ -7,7 +7,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.structure.Structure
 import org.bukkit.block.structure.StructureRotation
 
-data class StructureData(
+data class StructureBlocksData(
     val blocks: Map<Long, BlockData>,
     val chunks: Set<Long>,
 )
@@ -20,9 +20,9 @@ fun structureBlockChanges(
     rotation: StructureRotation,
     ignoreAir: Boolean,
     origin: Location,
-): StructureData {
+): StructureBlocksData {
     val palette = structure.palettes.firstOrNull()
-        ?: return StructureData(emptyMap(), emptySet())
+        ?: return StructureBlocksData(emptyMap(), emptySet())
 
     val size = structure.size
 
@@ -58,7 +58,7 @@ fun structureBlockChanges(
         chunks += chunkKey(worldX shr 4, worldZ shr 4)
     }
 
-    return StructureData(
+    return StructureBlocksData(
         blocks = blocks,
         chunks = chunks,
     )

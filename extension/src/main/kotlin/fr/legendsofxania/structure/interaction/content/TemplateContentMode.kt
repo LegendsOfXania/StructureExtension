@@ -13,7 +13,7 @@ import net.kyori.adventure.bossbar.BossBar
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-class StructureSelection {
+class Selection {
     var corner1: Location? = null
     var corner2: Location? = null
 
@@ -24,12 +24,12 @@ class StructureSelection {
     }
 }
 
-class StructureTemplateContentMode(
+class TemplateContentMode(
     context: ContentContext,
     player: Player
 ) : ContentMode(context, player) {
 
-    private val visualizer = StructureSelectionVisualizer(player)
+    private val visualizer = SelectionVisualizer(player)
 
     override suspend fun setup(): Result<Unit> {
         bossBar {
@@ -44,7 +44,7 @@ class StructureTemplateContentMode(
         val entry = Query.findById<StructureTemplateEntry>(entryId)
             ?: return failure("StructureTemplateEntry with ID: $entryId, not found")
 
-        val selectionTool = StructureSelectionTool(entry, StructureSelection(), visualizer)
+        val selectionTool = SelectionTool(entry, Selection(), visualizer)
         +selectionTool
 
         exit()

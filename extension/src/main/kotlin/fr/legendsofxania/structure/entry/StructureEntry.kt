@@ -9,27 +9,20 @@ import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.entry.entries.Var
 import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
 import org.bukkit.block.structure.StructureRotation
+import org.bukkit.entity.Player
 
 @Tags("structure_template_setter")
 interface StructureTemplateSetterEntry : Entry {
     override val id: String
     override val name: String
 
-    @Help("The structure template to paste.")
-    val template: Var<Ref<StructureTemplateEntry>>
-
-    @Help("The location where to paste the structure.")
-    val location: Var<Position>
-
-    @Help("The rotation to apply to the structure when pasting it.")
-    @Default("NONE")
-    val rotation: Var<StructureRotation>
-
-    @Help("Ignore air blocks when pasting the structure?")
-    @Default("false")
-    val ignoreAir: Var<Boolean>
-
-    @Help("Spawn entities present in the template?")
-    @Default("false")
-    val entities: Var<Boolean>
+    fun configuration(player: Player): StructureConfiguration
 }
+
+data class StructureConfiguration(
+    val template: Ref<StructureTemplateEntry>,
+    val location: Position,
+    val rotation: StructureRotation,
+    val ignoreAir: Boolean,
+    val entities: Boolean,
+)

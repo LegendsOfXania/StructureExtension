@@ -10,11 +10,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import kotlin.math.abs
 
-class StructureSelectionVisualizer(
+class SelectionVisualizer(
     private val player: Player
 ) {
     private val edgesBlockState = SpigotConversionUtil.fromBukkitBlockData(Material.RED_TERRACOTTA.createBlockData())
-
     private val edges = arrayOfNulls<WrapperEntity>(EDGE_PAIRS.size / 2)
 
     companion object {
@@ -31,7 +30,7 @@ class StructureSelectionVisualizer(
     private fun axis(vertex: Int, shift: Int, min: Double, max: Double): Double =
         if ((vertex shr shift) and 1 == 1) max else min
 
-    fun update(selection: StructureSelection) {
+    fun update(selection: Selection) {
         val (c1, c2) = selection.corners() ?: run { clear(); return }
         val world = c1.world ?: return
 

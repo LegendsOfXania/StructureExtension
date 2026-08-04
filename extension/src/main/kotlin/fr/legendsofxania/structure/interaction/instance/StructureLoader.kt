@@ -1,9 +1,7 @@
 package fr.legendsofxania.structure.interaction.instance
 
-import com.typewritermc.core.entries.Ref
-import com.typewritermc.core.utils.point.Position
 import com.typewritermc.engine.paper.utils.toBukkitLocation
-import fr.legendsofxania.structure.entry.static.template.StructureTemplateEntry
+import fr.legendsofxania.structure.entry.StructureConfiguration
 import fr.legendsofxania.structure.manager.TemplateManager
 import fr.legendsofxania.structure.util.structure.buildStructureEntities
 import fr.legendsofxania.structure.util.structure.structureBlockChanges
@@ -13,7 +11,6 @@ import me.tofaa.entitylib.wrapper.WrapperEntity
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
-import org.bukkit.block.structure.StructureRotation
 import kotlin.collections.emptyList
 
 data class LoadedStructure(
@@ -23,13 +20,7 @@ data class LoadedStructure(
     val entities: List<WrapperEntity>,
 )
 
-class StructureLoader(
-    private val template: Ref<StructureTemplateEntry>,
-    private val position: Position,
-    private val rotation: StructureRotation,
-    private val ignoreAir: Boolean,
-    private val spawnEntities: Boolean,
-) {
+class StructureLoader(private val configuration: StructureConfiguration) {
     @Volatile
     var cached: LoadedStructure? = null
         private set
@@ -41,10 +32,15 @@ class StructureLoader(
         return mutex.withLock {
             cached?.let { return@withLock it }
 
-            val structure = template.entry?.let { TemplateManager.loadTemplate(it) } ?: return@withLock null
-            val origin = position.toBukkitLocation(world)
-            val data = structureBlockChanges(structure, rotation, ignoreAir, origin)
-            val entities = if (spawnEntities) buildStructureEntities(structure, origin, rotation) else emptyList()
+            val structure = configuration.template.entry?.let { TemplateManager.loadTemplate(it) }
+                ?: return@withLock null
+            val origin = configuration.location.toBukkitLocation(world)
+            val data = structureBlockChanges(structure, configuration.rotation, configuration.ignoreAir, origin)
+            val entities = if (configuration.entities) {
+                buildStructureEntities(structure, origin, configuration.rotation)
+            } else {
+                emptyList()
+            }
 
             LoadedStructure(origin, data.chunks, data.blocks, entities).also { cached = it }
         }
